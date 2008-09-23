@@ -2,22 +2,12 @@ module IChing
   
   YANG  = 0 #=> -------
   YIN   = 1 #=> --- ---
-  
+
 
   class Hexagram < Array
-    def initialize
+    def initialize( signature = [] )
       super
       @moving_lines = []
-      @trigram_signatures = {
-        [ 0, 0, 0 ] => { :name => "Ch'ien", :attribute => "Strong", :image => "Heaven", :relationship => "Father" },
-        [ 1, 1, 1 ] => { :name => "K'un", :attribute => "Devoted, Yielding", :image => "Earth", :relationship => "Mother" },
-        [ 1, 1, 0 ] => { :name => "Chen", :attribute => "Inciting, Movement", :image => "Thunder", :relationship => "First Son" },
-        [ 1, 0, 1 ] => { :name => "K'an", :attribute => "Dangerous", :image => "Water", :relationship => "Second Son" },
-        [ 0, 1, 1 ] => { :name => "Ken", :attribute => "Resting", :image => "Mountain", :relationship => "Third Son" },
-        [ 0, 0, 1 ] => { :name => "Sun", :attribute => "Penetrating", :image => "Wind, Wood", :relationship => "First Daughter" },
-        [ 0, 1, 0 ] => { :name => "Li", :attribute => "Light-giving", :image => "Fire", :relationship => "Second Daughter" },
-        [ 1, 0, 0 ] => { :name => "Tui", :attribute => "Joyful", :image => "Lake", :relationship => "Third Daughter" },
-      }
       @signatures = { 
         [ 0, 0, 0, 0, 0, 0 ] => { :name => "Ch'ien" },
         [ 0, 0, 0, 0, 0, 1 ] => { :name => "Kou" },
@@ -84,11 +74,11 @@ module IChing
         [ 0, 1, 1, 1, 1, 1 ] => { :name => "Po" },
         [ 1, 1, 1, 1, 1, 1 ] => { :name => "K'un" },
       }
-    end
-
-    # return description of a trigram
-    def trigram_description( trigram_signature )
-      @trigram_signatures[ trigram_signature ]
+      
+      # convert any signature specified at initialization
+      self.each_with_index do | line, index |
+        self[ index ] = { :moving => false, :type => line } unless self[index].class == Hash
+      end
     end
 
     # return description of hexagram    
@@ -97,12 +87,19 @@ module IChing
     end
 
     # return array of moving lines
-    def moving_lines
+    def moving_lines( total = 6 )
       temp = []
       self.each_with_index do | line, index |
-         temp << (6 - index) if line[:moving] == true
+         temp << (total - index) if line[:moving] == true
       end
       temp
+    end
+    
+    def moving_lines=( temp = [] )
+      raise ArgumentError.new('Provide an array containing the indexes of the moving lines.') unless temp.class == Array
+      self.each_with_index do | line, index |
+        self[index][:moving] = true if temp.includes?( index )
+      end
     end
     
     # determine if hexagram is moving
@@ -110,12 +107,12 @@ module IChing
       !self.moving_lines.empty?
     end
 
-    def top_signature
-      self.signature[ 0, 3 ]
+    def top_trigram
+      IChing::Trigram.new( self.signature[0, 3] )
     end
-
-    def bottom_signature
-      self.signature[ 3, 6 ]
+    
+    def bottom_trigram
+      IChing::Trigram.new( self.signature[3, 6] )
     end
 
     # signature returns array of values defining lines of hexagram  
@@ -130,8 +127,7 @@ module IChing
     end
     
     # change returns the changed hexagram -- ie, without moving lines
-    def change
-      temp = IChing::Hexagram.new
+    def change( temp = IChing::Hexagram.new )
       self.each_with_index do | l, index |
         if l[:moving]
           type = IChing::YANG if l[:type] == IChing::YIN
@@ -156,7 +152,42 @@ module IChing
       end
       temp.join("\n")
     end
-       
+  end
+
+
+  class Trigram < IChing::Hexagram
+    def initialize( signature = [] )
+      super
+      @signatures = {
+        [ 0, 0, 0 ] => { :name => "Ch'ien", :attribute => "Strong", :image => "Heaven", :relationship => "Father" },
+        [ 1, 1, 1 ] => { :name => "K'un", :attribute => "Devoted, Yielding", :image => "Earth", :relationship => "Mother" },
+        [ 1, 1, 0 ] => { :name => "Chen", :attribute => "Inciting, Movement", :image => "Thunder", :relationship => "First Son" },
+        [ 1, 0, 1 ] => { :name => "K'an", :attribute => "Dangerous", :image => "Water", :relationship => "Second Son" },
+        [ 0, 1, 1 ] => { :name => "Ken", :attribute => "Resting", :image => "Mountain", :relationship => "Third Son" },
+        [ 0, 0, 1 ] => { :name => "Sun", :attribute => "Penetrating", :image => "Wind, Wood", :relationship => "First Daughter" },
+        [ 0, 1, 0 ] => { :name => "Li", :attribute => "Light-giving", :image => "Fire", :relationship => "Second Daughter" },
+        [ 1, 0, 0 ] => { :name => "Tui", :attribute => "Joyful", :image => "Lake", :relationship => "Third Daughter" },
+      }
+    end
+
+    def moving_lines
+      super.moving_lines(3)
+    end
+
+    # signature returns array of values defining lines of trigram  
+    def signature
+      temp = []
+      3.times do | i |
+        temp << self[ i ][:type] if self[i]
+      end
+      raise Exception.new('Signature missing lines.') if temp.size < 3
+      raise Exception.new('Signature has too many lines.') if temp.size > 3
+      temp
+    end
+      
+    def change
+      super.change( IChing::Trigram.new )
+    end
   end
 
 

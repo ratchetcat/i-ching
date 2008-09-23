@@ -1,48 +1,111 @@
-= I Ching
+= IChing
 
 == DESCRIPTION:
 
 I Ching allows you to easily cast hexagrams from _The Book of Changes_
 
-== FEATURES/PROBLEMS:
+== FEATURES:
 
+* Utilizes the Yarrow Stalk casting method described in the appendix of _The I Ching (or Book of Changes)_ by Richard Wilhelm.
 * Names and rudimentary descriptions for all generated hexagrams.
 * Easily determine the nuclear trigrams of a given hexagram.
 * Easily determine if a hexagram is moving, obtain the moving lines, or generate the changed hexagram.
 * Render a hexagram to a string.
 
+== TODO:
+
+* Further tests, optimizations, beautification.
+
 == SYNOPSIS:
 
-The library makes casting hexagrams easy:
+Casting hexagrams is easy:
 
-require 'iching'
+  require 'iching'
 
-cast = IChing::Cast.new
-cast.hexagrams.each do | hexagram |
-  puts
-  puts hexagram.to_s
-  puts hexagram.description[:name]
-  hexagram.moving_lines.each { | line | puts "Lines #{ line }" }
-end
+  cast = IChing::Cast.new
+  cast.hexagrams.each do | hexagram |
+    puts
+    puts hexagram.to_s
+    puts hexagram.description[:name]
+    hexagram.moving_lines.each { | line | puts "Lines #{ line }" }
+  end
 
 Example output:
 
--------
--------
---- ---
--------
----x---
---- ---
-Chien
-Lines 2
+  -------
+  -------
+  --- ---
+  -------
+  ---x---
+  --- ---
+  Chien
+  Lines 2
+  
+  -------
+  -------
+  --- ---
+  -------
+  -------
+  --- ---
+  Sun
 
--------
--------
---- ---
--------
--------
---- ---
-Sun
+Once cast, you can query a hexagram for details:
+
+  cast = IChing::Cast.new
+  hexagram = cast.hexagrams.first
+
+  puts hexagram.to_s
+
+    -------
+    -------
+    --- ---
+    -------
+    ---x---
+    --- ---
+
+  puts hexagram.description[:name]
+
+    Chien
+  
+  puts hexagram.moving_lines
+
+    2
+  
+  puts hexagram.signature.to_s
+
+    001011
+
+  puts hexagram.top_trigram.to_s
+
+    -------
+    -------
+    --- ---
+
+  puts hexagram.top_trigram.description[:name]
+
+    Sun
+
+  puts hexagram.top_trigram.signature.to_s
+
+    001
+
+  puts hexagram.bottom_trigram.to_s
+
+    -------
+    --- ---
+    --- ---
+
+  puts hexagram.bottom_trigram.description[:name]
+
+    Ken
+
+  puts hexagram.bottom_trigram.signature.to_s
+
+    011
+
+== FURTHER READING:
+
+_The I Ching (or Book of Changes)_ by Richard Wilhelm
 
 == LICENSE:
 
