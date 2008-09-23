@@ -27,6 +27,7 @@ end
 
 Example output:
 
+<tt>
 -------
 -------
 --- ---
@@ -43,6 +44,7 @@ Lines 2
 -------
 --- ---
 Sun
+</tt>
 
 == LICENSE:
 

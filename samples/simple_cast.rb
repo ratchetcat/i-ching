@@ -1,16 +1,11 @@
 #!/usr/env/ruby -w
 
-require 'iching.rb'
+require File.expand_path(File.dirname(__FILE__) + "../../lib/iching")
 
-c = IeChing::Caster.new
-c.cast
-c.hexagrams.each do | h |
-  puts h.to_s
-  puts h.description[:name]
-  if h.moving?
-    h.moving_lines.each do | l |
-      puts "Lines #{ l }"
-    end
-  end
+cast = IChing::Cast.new
+cast.hexagrams.each do | hexagram |
   puts
+  puts hexagram.to_s
+  puts hexagram.description[:name]
+  hexagram.moving_lines.each { | line | puts "Lines #{ line }" }
 end

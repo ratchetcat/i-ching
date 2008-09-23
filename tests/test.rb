@@ -1,12 +1,12 @@
 #!/usr/env/ruby -w
 
 require 'test/unit'
-require 'iching.rb'
+require 'iching'
 
 class TestCaster < Test::Unit::TestCase
 
   def setup
-    @c = IeChing::Caster.new
+    @c = IChing::Cast.new
   end
   
   def test_divide
@@ -33,7 +33,7 @@ class TestCaster < Test::Unit::TestCase
   def test_cast_returns_hexagram
     100.times do | i |
       temp = @c.cast
-      assert_equal( IeChing::Hexagram, temp[0].class )
+      assert_equal( IChing::Hexagram, temp[0].class )
     end
   end
 
@@ -50,10 +50,10 @@ end
 class TestHexagram < Test::Unit::TestCase
   
   def setup
-    @h = IeChing::Hexagram.new()
+    @h = IChing::Hexagram.new()
   end
   
-  def setup_line( moving = true, type = IeChing::YIN )
+  def setup_line( moving = true, type = IChing::YIN )
     @h << { :moving => moving, :type => type }
   end
   
@@ -61,9 +61,9 @@ class TestHexagram < Test::Unit::TestCase
     setup_line( true )
     setup_line( false )
     setup_line( true )
-    setup_line( false, IeChing::YANG )
-    setup_line( false, IeChing::YANG )
-    setup_line( false, IeChing::YANG )
+    setup_line( false, IChing::YANG )
+    setup_line( false, IChing::YANG )
+    setup_line( false, IChing::YANG )
   end
 
   def test_moving_lines
