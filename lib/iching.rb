@@ -98,7 +98,7 @@ module IChing
     def moving_lines=( temp = [] )
       raise ArgumentError.new('Provide an array containing the indexes of the moving lines.') unless temp.class == Array
       self.each_with_index do | line, index |
-        self[index][:moving] = true if temp.includes?( index )
+        self[index][:moving] = true if temp.include?( index )
       end
     end
     
@@ -169,9 +169,13 @@ module IChing
         [ 1, 0, 0 ] => { :name => "Tui", :attribute => "Joyful", :image => "Lake", :relationship => "Third Daughter" },
       }
     end
+    
+    def moving_lines?
+      super(3)
+    end
 
     def moving_lines
-      super.moving_lines(3)
+      super(3)
     end
 
     # signature returns array of values defining lines of trigram  
@@ -186,7 +190,7 @@ module IChing
     end
       
     def change
-      super.change( IChing::Trigram.new )
+      super( IChing::Trigram.new )
     end
   end
 
@@ -281,8 +285,8 @@ module IChing
         end
       end
       
-      @hexagrams << h
-      @hexagrams << h.change if h.moving?
+      @hexagrams = [ h ]
+      @hexagrams = [ h, h.change ] if h.moving?
       @hexagrams
     end
   end
